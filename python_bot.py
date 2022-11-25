@@ -58,6 +58,10 @@ async def kzt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_kzt)
 
 
+async def new_func(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message('wow, it works')
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
     start_handler = CommandHandler('start', start)
@@ -66,6 +70,7 @@ if __name__ == '__main__':
     usd_handler = CommandHandler('usd', usd)
     rub_handler = CommandHandler('rub', rub)
     kzt_handler = CommandHandler('kzt', kzt)
+    new_handler = MessageHandler('new', new_func)
 
     
     application.add_handler(start_handler)
