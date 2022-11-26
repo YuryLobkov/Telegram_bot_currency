@@ -1,7 +1,7 @@
 import logging
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
-from scrape import get_course_dollar_hoy
+from scrape import get_course_dollar_hoy, get_blue_dollar
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -14,8 +14,9 @@ kzt_course = 460
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id,
-                                   text="Ready to convert you money!\nAvailable currency:\n/usd\n/ars\n/rub\n/kzt\n"
-                                        "type /hoy to get ars course")
+                                   text="Ready to convert you money!\nAvailable currency:\n/usd\n/ars\n/rub\n/kzt\n\n"
+                                        "/hoy to get ars courses\n"
+                                        "/blue to get blue course")
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -78,6 +79,11 @@ async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
 
 
+async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    dollar_hoy_courses = get_blue_dollar()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
     start_handler = CommandHandler('start', start)
@@ -88,6 +94,7 @@ if __name__ == '__main__':
     kzt_handler = CommandHandler('kzt', kzt)
     new_handler = MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars)
     dollar_hoy_handler = CommandHandler('hoy', dollar_hoy)
+    dollar_blue_handler = CommandHandler('blue', dollar_blue)
 
     application.add_handler(start_handler)
     # application.add_handler(echo_handler)
@@ -97,5 +104,6 @@ if __name__ == '__main__':
     application.add_handler(kzt_handler)
     application.add_handler(new_handler)
     application.add_handler(dollar_hoy_handler)
+    application.add_handler(dollar_blue_handler)
 
     application.run_polling()
