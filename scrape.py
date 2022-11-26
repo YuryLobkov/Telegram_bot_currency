@@ -23,3 +23,6 @@ def scrap_dolar_hoy(title, val):
 
 pprint.pprint(scrap_dolar_hoy(title, val))
 
+def get_course_dollar_hoy():
+    return scrap_dolar_hoy(title, val)
+
