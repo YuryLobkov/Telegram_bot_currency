@@ -77,14 +77,12 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # func to print actual blue peso rate from dolarhoy
 async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    dollar_hoy_courses = get_course_dollar_hoy()
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=get_course_dollar_hoy())
 
 
 # print all peso rates
 async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    dollar_hoy_courses = get_blue_dollar()
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=get_blue_dollar())
 
 async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -107,6 +105,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     await query.edit_message_text(text=f"{query.data}")
 
+async def test():
+    pass
+
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
@@ -121,6 +122,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('hoy', dollar_hoy))
     application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(CommandHandler('test', test))
     application.add_handler(CallbackQueryHandler(button))
 
     application.run_polling()
