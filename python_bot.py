@@ -1,5 +1,5 @@
 import logging
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
 from scrape import get_course_dollar_hoy, get_blue_dollar
 
@@ -7,7 +7,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-ars_course = 289
+ars_course = 315
 rub_course = 65
 kzt_course = 460
 
@@ -64,6 +64,7 @@ async def kzt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_kzt)
 
 
+# func to calculate peso without /command
 async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(update.message.text)
     input_ars = int(update.message.text[3:])
@@ -74,14 +75,29 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_ars)
 
 
+# func to print actual blue peso rate from dolarhoy
 async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     dollar_hoy_courses = get_course_dollar_hoy()
     await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
 
 
+# print all peso rates
 async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
     dollar_hoy_courses = get_blue_dollar()
     await context.bot.send_message(chat_id=update.effective_chat.id, text=dollar_hoy_courses)
+
+async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [
+            InlineKeyboardButton("Option 1", callback_data="1"),
+            InlineKeyboardButton("Option 2", callback_data="2"),
+        ],
+        [InlineKeyboardButton("Option 3", callback_data="3")],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
 
 
 if __name__ == '__main__':
@@ -95,6 +111,7 @@ if __name__ == '__main__':
     new_handler = MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars)
     dollar_hoy_handler = CommandHandler('hoy', dollar_hoy)
     dollar_blue_handler = CommandHandler('blue', dollar_blue)
+    buttons_handler = CommandHandler('buttons', buttons)
 
     application.add_handler(start_handler)
     # application.add_handler(echo_handler)
@@ -105,5 +122,6 @@ if __name__ == '__main__':
     application.add_handler(new_handler)
     application.add_handler(dollar_hoy_handler)
     application.add_handler(dollar_blue_handler)
+    application.add_handler(buttons_handler)
 
     application.run_polling()
