@@ -120,14 +120,19 @@ async def test(update: Update, context: CallbackContext):
     num_keys = [
         [KeyboardButton("1"), KeyboardButton("2"), KeyboardButton("3"), KeyboardButton("ARS")],
         [KeyboardButton("4"), KeyboardButton("5"), KeyboardButton("6"), KeyboardButton("USD")],
-        [KeyboardButton("7"), KeyboardButton("8"), KeyboardButton("9"), KeyboardButton("RUB")]
+        [KeyboardButton("7"), KeyboardButton("8"), KeyboardButton("9"), KeyboardButton("RUB")],
+        [KeyboardButton("<"), KeyboardButton("0"), KeyboardButton("."), KeyboardButton("KZT")]
     ]
     await context.bot.send_message(chat_id=update.effective_chat.id, text='Input value',
                                    reply_markup=ReplyKeyboardMarkup(num_keys))
 
 
 async def num_keys_recorder(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    num_keys_string.append(update.message.text)
+    if len(update.message.text) == 1:
+        if update.message.text == '<':
+            num_keys_string.pop(len(num_keys_string)-1)
+        else:
+            num_keys_string.append(update.message.text)
     print(''.join(num_keys_string))
     await update.message.delete()
 
@@ -147,6 +152,6 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('buttons', buttons))
     application.add_handler(CommandHandler('test', test))
     application.add_handler(CallbackQueryHandler(button))
-    application.add_handler(MessageHandler(filters.Regex(r"[0-9|<]"), num_keys_recorder))
+    application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
 
     application.run_polling()
