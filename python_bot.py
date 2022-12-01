@@ -1,6 +1,6 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from scrape import get_course_dollar_hoy, get_blue_dollar
 
 logging.basicConfig(
@@ -89,15 +89,23 @@ async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
-            InlineKeyboardButton("Option 1", callback_data="1"),
-            InlineKeyboardButton("Option 2", callback_data="2"),
+            InlineKeyboardButton("Get rates ars", callback_data=get_blue_dollar()),
+            InlineKeyboardButton("Get rates rub", callback_data="this section coming soon"),
+            InlineKeyboardButton("Get rates kzt", callback_data="this section coming soon"),
         ],
-        [InlineKeyboardButton("Option 3", callback_data="3")],
+        [InlineKeyboardButton("Calc usd", callback_data="this section coming soon")],
+        [InlineKeyboardButton("Calc ars", callback_data="this section coming soon")],
+        [InlineKeyboardButton("Calc rub", callback_data="this section coming soon")],
+        [InlineKeyboardButton("Calc ktz", callback_data="this section coming soon")],
     ]
-
     reply_markup = InlineKeyboardMarkup(keyboard)
-
     await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(text=f"{query.data}")
 
 
 if __name__ == '__main__':
@@ -113,5 +121,6 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('hoy', dollar_hoy))
     application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(CallbackQueryHandler(button))
 
     application.run_polling()
