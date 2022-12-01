@@ -1,7 +1,15 @@
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
+
+import telegram
+import telegram.ext
+# from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, KeyboardButton, \
+#     ReplyKeyboardMarkup
+# from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, \
+#     CallbackQueryHandler, CallbackContext
 from scrape import get_course_dollar_hoy, get_blue_dollar
+
+from telegram import *
+from telegram.ext import *
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -73,6 +81,7 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
     output_ars_kzt = round(input_ars / ars_course * kzt_course, 2)
     text_ars = str(output_ars_usd) + ' USD\n' + str(output_ars_rub) + ' RUB\n' + str(output_ars_kzt) + ' KZT\n'
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_ars)
+    print(telegram.InputTextMessageContent('/arsars'))
 
 
 # func to print actual blue peso rate from dolarhoy
@@ -84,20 +93,23 @@ async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=get_blue_dollar())
 
+
+# noinspection PyUnusedLocal
 async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
             InlineKeyboardButton("Get rates ars", callback_data=get_blue_dollar()),
             InlineKeyboardButton("Get rates rub", callback_data="this section coming soon"),
-            InlineKeyboardButton("Get rates kzt", callback_data="this section coming soon"),
+            InlineKeyboardButton("Get rates kzt", callback_data='wefwef'),
         ],
-        [InlineKeyboardButton("Calc usd", callback_data="this section coming soon")],
-        [InlineKeyboardButton("Calc ars", callback_data="this section coming soon")],
-        [InlineKeyboardButton("Calc rub", callback_data="this section coming soon")],
-        [InlineKeyboardButton("Calc ktz", callback_data="this section coming soon")],
+        # [InlineKeyboardButton("Calc usd", callback_data="this section coming soon")],
+        # [InlineKeyboardButton("Calc ars", callback_data="this section coming soon")],
+        # [InlineKeyboardButton("Calc rub", callback_data="this section coming soon")],
+        # [InlineKeyboardButton("Calc ktz", callback_data="this section coming soon")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Parses the CallbackQuery and updates the message text."""
@@ -105,8 +117,15 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     await query.edit_message_text(text=f"{query.data}")
 
-async def test():
-    pass
+
+async def test(update: Update, context: CallbackContext):
+    num_keys = [
+            [KeyboardButton("1"), KeyboardButton("2"), KeyboardButton("3"), KeyboardButton("/ars 100")],
+            [KeyboardButton("4"), KeyboardButton("5"), KeyboardButton("6"), KeyboardButton("/usd")],
+            [KeyboardButton("7"), KeyboardButton("8"), KeyboardButton("9"), KeyboardButton("/rub")]
+    ]
+    # await context.bot.send_message(chat_id=update.effective_chat.id, text='Input value',
+    #                                reply_markup=ReplyKeyboardMarkup(num_keys))
 
 
 if __name__ == '__main__':

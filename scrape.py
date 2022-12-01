@@ -21,7 +21,7 @@ def scrap_dolar_hoy(title, val):
     return dh
 
 
-pprint.pprint(scrap_dolar_hoy(titles, vals))
+#pprint.pprint(scrap_dolar_hoy(titles, vals))
 
 
 def get_course_dollar_hoy():
