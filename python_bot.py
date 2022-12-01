@@ -116,7 +116,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.edit_message_text(text=f"{query.data}")
 
 
-async def test(update: Update, context: CallbackContext):
+async def main_keyboard(update: Update, context: CallbackContext):
     num_keys = [
         [KeyboardButton("1"), KeyboardButton("2"), KeyboardButton("3"), KeyboardButton("ARS")],
         [KeyboardButton("4"), KeyboardButton("5"), KeyboardButton("6"), KeyboardButton("USD")],
@@ -148,20 +148,56 @@ async def num_keys_recorder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.delete()
 
 
+async def keyboard_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.text == 'ARS':
+        input_ars = int(''.join(num_keys_string))
+        output_ars_usd = round(input_ars / ars_course, 2)
+        output_ars_rub = round(input_ars / ars_course * rub_course, 2)
+        output_ars_kzt = round(input_ars / ars_course * kzt_course, 2)
+        num_keys_string.clear()
+        text_ars = str(input_ars) + ' ARS=\n' + str(output_ars_usd) + ' USD\n' + str(output_ars_rub) + ' RUB\n' + str(output_ars_kzt) + ' KZT\n'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text_ars)
+    elif update.message.text == 'USD':
+        input_usd = int(''.join(num_keys_string))
+        output_usd_ars = round(input_usd * ars_course, 2)
+        output_usd_rub = round(input_usd * rub_course, 2)
+        output_usd_kzt = round(input_usd * kzt_course, 2)
+        num_keys_string.clear()
+        text_usd = str(input_usd) + ' USD=\n' + str(output_usd_ars) + ' ARS\n' + str(output_usd_rub) + ' RUB\n' + str(output_usd_kzt) + ' KZT\n'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text_usd)
+    elif update.message.text == 'RUB':
+        input_rub = int(''.join(num_keys_string))
+        output_rub_usd = round(input_rub / rub_course, 2)
+        output_rub_ars = round(input_rub / rub_course * ars_course, 2)
+        output_rub_kzt = round(input_rub / rub_course * kzt_course, 2)
+        num_keys_string.clear()
+        text_rub = str(input_rub) + ' RUB=\n' + str(output_rub_usd) + ' USD\n' + str(output_rub_ars) + ' ARS\n' + str(output_rub_kzt) + ' KZT\n'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text_rub)
+    elif update.message.text == 'KZT':
+        input_kzt = int(''.join(num_keys_string))
+        output_kzt_usd = round(input_kzt / kzt_course, 2)
+        output_kzt_rub = round(input_kzt / kzt_course * rub_course, 2)
+        output_kzt_ars = round(input_kzt / kzt_course * ars_course, 2)
+        num_keys_string.clear()
+        text_kzt = str(input_kzt) + ' KZT=\n' + str(output_kzt_usd) + ' USD\n' + str(output_kzt_rub) + ' RUB\n' + str(output_kzt_ars) + ' ARS\n'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text_kzt)
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
     # echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('keyboard', main_keyboard))
     # application.add_handler(echo_handler)
     application.add_handler(CommandHandler('ars', ars))
     application.add_handler(CommandHandler('usd', usd))
     application.add_handler(CommandHandler('rub', rub))
     application.add_handler(CommandHandler('kzt', kzt))
     application.add_handler(MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars))
+    application.add_handler(MessageHandler(filters.Regex(r"[a-zA-Z]{3}"), keyboard_calc))
     application.add_handler(CommandHandler('hoy', dollar_hoy))
     application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('buttons', buttons))
-    application.add_handler(CommandHandler('test', test))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
 
