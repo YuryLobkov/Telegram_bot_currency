@@ -129,9 +129,20 @@ async def test(update: Update, context: CallbackContext):
 
 async def num_keys_recorder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(update.message.text) == 1:
-        if update.message.text == '<':
-            num_keys_string.pop(len(num_keys_string)-1)
-        else:
+        if update.message.text == '.': #and '.' not in num_keys_string:
+            if '.' not in num_keys_string:
+                if len(num_keys_string) != 0:
+                    num_keys_string.append('.')
+                else:
+                    num_keys_string.extend(['0', '.'])
+            else:
+                update.message.text = ''
+        elif update.message.text == '<':
+            if len(num_keys_string) != 0:
+                num_keys_string.pop(len(num_keys_string)-1)
+            else:
+                update.message.text = ''
+        elif int(update.message.text) in range(10):
             num_keys_string.append(update.message.text)
     print(''.join(num_keys_string))
     await update.message.delete()
