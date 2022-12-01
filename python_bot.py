@@ -147,6 +147,6 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('buttons', buttons))
     application.add_handler(CommandHandler('test', test))
     application.add_handler(CallbackQueryHandler(button))
-    application.add_handler(MessageHandler(filters.Regex(r"\d"), num_keys_recorder))
+    application.add_handler(MessageHandler(filters.Regex(r"[0-9|<]"), num_keys_recorder))
 
     application.run_polling()
