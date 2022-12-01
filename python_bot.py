@@ -1,7 +1,5 @@
 import logging
 
-import telegram
-import telegram.ext
 # from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, KeyboardButton, \
 #     ReplyKeyboardMarkup
 # from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, \
@@ -18,6 +16,7 @@ logging.basicConfig(
 ars_course = 315
 rub_course = 65
 kzt_course = 460
+num_keys_string = []
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -81,7 +80,6 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
     output_ars_kzt = round(input_ars / ars_course * kzt_course, 2)
     text_ars = str(output_ars_usd) + ' USD\n' + str(output_ars_rub) + ' RUB\n' + str(output_ars_kzt) + ' KZT\n'
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_ars)
-    print(telegram.InputTextMessageContent('/arsars'))
 
 
 # func to print actual blue peso rate from dolarhoy
@@ -100,7 +98,7 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [
             InlineKeyboardButton("Get rates ars", callback_data=get_blue_dollar()),
             InlineKeyboardButton("Get rates rub", callback_data="this section coming soon"),
-            InlineKeyboardButton("Get rates kzt", callback_data='wefwef'),
+            InlineKeyboardButton("Get rates kzt", callback_data='test_test'),
         ],
         # [InlineKeyboardButton("Calc usd", callback_data="this section coming soon")],
         # [InlineKeyboardButton("Calc ars", callback_data="this section coming soon")],
@@ -120,12 +118,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def test(update: Update, context: CallbackContext):
     num_keys = [
-            [KeyboardButton("1"), KeyboardButton("2"), KeyboardButton("3"), KeyboardButton("/ars 100")],
-            [KeyboardButton("4"), KeyboardButton("5"), KeyboardButton("6"), KeyboardButton("/usd")],
-            [KeyboardButton("7"), KeyboardButton("8"), KeyboardButton("9"), KeyboardButton("/rub")]
+        [KeyboardButton("1"), KeyboardButton("2"), KeyboardButton("3"), KeyboardButton("ARS")],
+        [KeyboardButton("4"), KeyboardButton("5"), KeyboardButton("6"), KeyboardButton("USD")],
+        [KeyboardButton("7"), KeyboardButton("8"), KeyboardButton("9"), KeyboardButton("RUB")]
     ]
-    # await context.bot.send_message(chat_id=update.effective_chat.id, text='Input value',
-    #                                reply_markup=ReplyKeyboardMarkup(num_keys))
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='Input value',
+                                   reply_markup=ReplyKeyboardMarkup(num_keys))
+
+
+async def num_keys_recorder(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    num_keys_string.append(update.message.text)
+    print(''.join(num_keys_string))
+    await update.message.delete()
 
 
 if __name__ == '__main__':
@@ -143,5 +147,6 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('buttons', buttons))
     application.add_handler(CommandHandler('test', test))
     application.add_handler(CallbackQueryHandler(button))
+    application.add_handler(MessageHandler(filters.Regex(r"\d"), num_keys_recorder))
 
     application.run_polling()
