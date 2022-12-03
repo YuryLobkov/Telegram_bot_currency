@@ -13,9 +13,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-ars_course = 315
-rub_course = 65
-kzt_course = 460
+default_ars_course = 315
+default_rub_course = 65
+default_kzt_course = 460
+
+ars_course = default_ars_course
+rub_course = default_rub_course
+kzt_course = default_kzt_course
 num_keys_string = []
 
 
