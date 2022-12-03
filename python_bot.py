@@ -4,7 +4,8 @@ import logging
 #     ReplyKeyboardMarkup
 # from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, \
 #     CallbackQueryHandler, CallbackContext
-from scrape import get_course_dollar_hoy, get_blue_dollar
+from scrape import get_course_dollar_hoy, get_blue_dollar, get_blue_dollar_value
+from scrape_rub import get_rub_value
 
 from telegram import *
 from telegram.ext import *
@@ -13,9 +14,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-ars_course = 315
-rub_course = 65
-kzt_course = 460
+default_ars_course = 315
+default_rub_course = 65
+default_kzt_course = 460
+
+ars_course = default_ars_course
+rub_course = default_rub_course
+kzt_course = default_kzt_course
 num_keys_string = []
 
 
@@ -183,6 +188,20 @@ async def keyboard_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text=text_kzt)
 
 
+async def real_time_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global ars_course, rub_course
+    ars_course = get_blue_dollar_value()
+    rub_course = get_rub_value()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to real-time rates')
+
+
+async def default_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global ars_course, rub_course
+    ars_course = default_ars_course
+    rub_course = default_rub_course
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to default rates')
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
     # echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
@@ -198,6 +217,8 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('hoy', dollar_hoy))
     application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(CommandHandler('realtime', real_time_rates))
+    application.add_handler(CommandHandler('default', default_rates))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
 

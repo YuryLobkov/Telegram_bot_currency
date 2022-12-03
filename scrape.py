@@ -35,4 +35,8 @@ def get_blue_dollar():
     return 'Dólar blue\n' + blue
 
 
-# print(get_blue_dollar())
+def get_blue_dollar_value():
+    return float(scrap_dolar_hoy(titles, vals)[0]['Dólar blue']['compra'][1:])
+
+
+print(get_blue_dollar_value())

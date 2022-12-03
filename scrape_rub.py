@@ -1,7 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import pprint
-import time
 
 
 def get_rub_rate_str():
