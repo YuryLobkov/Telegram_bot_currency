@@ -4,7 +4,8 @@ import logging
 #     ReplyKeyboardMarkup
 # from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, \
 #     CallbackQueryHandler, CallbackContext
-from scrape import get_course_dollar_hoy, get_blue_dollar
+from scrape import get_course_dollar_hoy, get_blue_dollar, get_blue_dollar_value
+from scrape_rub import get_rub_value
 
 from telegram import *
 from telegram.ext import *
@@ -185,6 +186,12 @@ async def keyboard_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
         num_keys_string.clear()
         text_kzt = str(input_kzt) + ' KZT=\n' + str(output_kzt_usd) + ' USD\n' + str(output_kzt_rub) + ' RUB\n' + str(output_kzt_ars) + ' ARS\n'
         await context.bot.send_message(chat_id=update.effective_chat.id, text=text_kzt)
+
+
+async def real_time_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global ars_course, rub_course
+    ars_course = get_blue_dollar_value()
+    rub_course = get_rub_value()
 
 
 if __name__ == '__main__':
