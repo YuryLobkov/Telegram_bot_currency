@@ -192,6 +192,14 @@ async def real_time_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global ars_course, rub_course
     ars_course = get_blue_dollar_value()
     rub_course = get_rub_value()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to real-time rates')
+
+
+async def default_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global ars_course, rub_course
+    ars_course = default_ars_course
+    rub_course = default_rub_course
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to default rates')
 
 
 if __name__ == '__main__':
@@ -209,6 +217,8 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('hoy', dollar_hoy))
     application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(CommandHandler('realtime', real_time_rates))
+    application.add_handler(CommandHandler('default', default_rates))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
 
