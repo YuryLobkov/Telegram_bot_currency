@@ -5,7 +5,7 @@ import time
 
 res = requests.get('https://dolarhoy.com/')
 soup = BeautifulSoup(res.text, 'html.parser')
-print(res)
+print('dolarhoy.com', res)
 vals = soup.select('.val')
 titles = soup.select('.title')
 
@@ -39,4 +39,4 @@ def get_blue_dollar_value():
     return float(scrap_dolar_hoy(titles, vals)[0]['Dólar blue']['compra'][1:])
 
 
-print(get_blue_dollar_value())
+# print(get_blue_dollar_value())

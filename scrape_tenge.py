@@ -15,5 +15,5 @@ def get_kzt_value():
     return float(get_kzt_rate_str())
 
 
-print(get_kzt_rate_str())
-print(get_kzt_value())
+# print(get_kzt_rate_str())
+# print(get_kzt_value())
