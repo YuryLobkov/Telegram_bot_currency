@@ -14,4 +14,4 @@ def get_rub_value():
 
 
 #print(get_rub_rate_str())
-print(get_rub_value())
+# print(get_rub_value())

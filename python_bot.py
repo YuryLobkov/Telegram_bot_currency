@@ -6,6 +6,7 @@ import logging
 #     CallbackQueryHandler, CallbackContext
 from scrape import get_course_dollar_hoy, get_blue_dollar, get_blue_dollar_value
 from scrape_rub import get_rub_value
+from scrape_tenge import get_kzt_value
 
 from telegram import *
 from telegram.ext import *
@@ -89,13 +90,11 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # func to print actual blue peso rate from dolarhoy
 async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print('hoy')
     await context.bot.send_message(chat_id=update.effective_chat.id, text=get_course_dollar_hoy())
 
 
 # print all peso rates
 async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print('blue')
     await context.bot.send_message(chat_id=update.effective_chat.id, text=get_blue_dollar())
 
 
@@ -191,25 +190,35 @@ async def keyboard_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def real_time_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global ars_course, rub_course
+    global ars_course, rub_course, kzt_course
     ars_course = get_blue_dollar_value()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='ARS updated, please, wait...')
     rub_course = get_rub_value()
-    print('realtime')
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='RUB updated, please, wait...')
+    kzt_course = get_kzt_value()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='KZT updated, please, wait...')
     await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to real-time rates')
 
 
 async def default_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global ars_course, rub_course
+    global ars_course, rub_course, kzt_course
     ars_course = default_ars_course
     rub_course = default_rub_course
+    kzt_course = default_kzt_course
     await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to default rates')
+
+
+async def all_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if ars_course == default_ars_course and rub_course == default_rub_course and kzt_course == default_kzt_course:
+        course_status = 'Default courses set'
+    else:
+        course_status = 'Real-time courses set'
+    all_rates_str = f'ARS {ars_course}\nRUB {rub_course}\nKZT {kzt_course}\n{course_status}'
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=all_rates_str)
 
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
-    # echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
-    application.add_handler(CommandHandler('hoy', dollar_hoy))
-    application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('keyboard', main_keyboard))
     application.add_handler(CommandHandler('ars', ars))
@@ -218,9 +227,13 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('kzt', kzt))
     application.add_handler(CommandHandler('realtime', real_time_rates))
     application.add_handler(CommandHandler('default', default_rates))
+    application.add_handler(CommandHandler('hoy', dollar_hoy))
+    application.add_handler(CommandHandler('blue', dollar_blue))
+    application.add_handler(CommandHandler('rates', all_rates))
     application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars))
     application.add_handler(MessageHandler(filters.Regex(r"[a-zA-Z]{3}"), keyboard_calc))
-    application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
+
     application.run_polling()
