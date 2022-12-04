@@ -89,11 +89,13 @@ async def message_ars(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # func to print actual blue peso rate from dolarhoy
 async def dollar_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print('hoy')
     await context.bot.send_message(chat_id=update.effective_chat.id, text=get_course_dollar_hoy())
 
 
 # print all peso rates
 async def dollar_blue(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print('blue')
     await context.bot.send_message(chat_id=update.effective_chat.id, text=get_blue_dollar())
 
 
@@ -192,6 +194,7 @@ async def real_time_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global ars_course, rub_course
     ars_course = get_blue_dollar_value()
     rub_course = get_rub_value()
+    print('realtime')
     await context.bot.send_message(chat_id=update.effective_chat.id, text='Mode changed to real-time rates')
 
 
@@ -205,21 +208,19 @@ async def default_rates(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5845321171:AAFNwP1u-ZuHDnwpk0VNjzl4bBZOeSSJAzY').build()
     # echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
+    application.add_handler(CommandHandler('hoy', dollar_hoy))
+    application.add_handler(CommandHandler('blue', dollar_blue))
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('keyboard', main_keyboard))
-    # application.add_handler(echo_handler)
     application.add_handler(CommandHandler('ars', ars))
     application.add_handler(CommandHandler('usd', usd))
     application.add_handler(CommandHandler('rub', rub))
     application.add_handler(CommandHandler('kzt', kzt))
-    application.add_handler(MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars))
-    application.add_handler(MessageHandler(filters.Regex(r"[a-zA-Z]{3}"), keyboard_calc))
-    application.add_handler(CommandHandler('hoy', dollar_hoy))
-    application.add_handler(CommandHandler('blue', dollar_blue))
-    application.add_handler(CommandHandler('buttons', buttons))
     application.add_handler(CommandHandler('realtime', real_time_rates))
     application.add_handler(CommandHandler('default', default_rates))
+    application.add_handler(CommandHandler('buttons', buttons))
+    application.add_handler(MessageHandler(filters.Regex(r"(?i)(ars)\s(\d+)"), message_ars))
+    application.add_handler(MessageHandler(filters.Regex(r"[a-zA-Z]{3}"), keyboard_calc))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.Regex(r"[0-9|<|\.]"), num_keys_recorder))
-
     application.run_polling()
